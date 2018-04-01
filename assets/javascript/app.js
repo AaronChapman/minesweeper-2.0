@@ -3,7 +3,7 @@ var array_of_blocks = [];
 var number_of_bombs = 0; //ten bombs
 var bomb_limit = 10;
 var number_of_flagged_blocks = 0;
-var block_bombs = [];
+var array_of_bombs = [];
 var seconds = 120;
 var dimension = 9;
 
@@ -74,29 +74,41 @@ function generate_field() {
 }
 
 function calculateDistance(block_id) {
-
+	
 	var block_index_x = block_id.charAt(0);
 	var block_index_y = block_id.charAt(2);
 
 	var block_empty = array_of_blocks[block_index_x][block_index_y];
 
 	if (block_empty['block_type'] !== "bomb") {
-		var bombs = traverseBoard(block_empty,
+		var empties = traverseBoard(block_empty,
 			function (isBomb) {		
 				var bomb_type = isBomb['block_type'];
 				//Non inverted boolean so true boolean representation
 				return (!!(bomb_type === "bomb")) ? false : true;
 			});
 
-		if (bombs.length > 0) {
-			block_empty['block_adyacent_empties'] = bombs.length;
+		if (empties.length > 0) {
+			block_empty['block_adyacent_empties'] = empties.length;
 		} 
+
+		revealEmptyBlocks(empties);
 	}
 }
 
+function revealEmptyBlocks(array_of_empties) {
+	
+	for(item of array_of_empties) {
+		item['block_state'] = "clicked";
+		$('#' + item['block_coordinate_x'] + '-' + item['block_coordinate_y'])
+			.data('state', 'clicked')
+			.css('background-image', `url(assets/images/${item.block_state}.png)`);
+	};
+};
+
 //traverse the board
 function traverseBoard(empty_block, isBomb) {
-
+	
 	var empty_blocks = [];
 
 	isBomb = isBomb || function () { return true; };
@@ -166,8 +178,8 @@ function plantBombs(array, bombsPlanted, limit) {
 			//search for specific coordinates
 			$('#' + index_x + '-' + index_y).data('type', temp_obj.block_type);
 			array[index_x][index_y] = temp_obj;
-			block_bombs[index_x] = {};
-			block_bombs[index_x][index_y] = temp_obj;
+			array_of_bombs[index_x] = {};
+			array_of_bombs[index_x][index_y] = temp_obj;
 			bombsPlanted++;
 		}
  	}
@@ -233,7 +245,7 @@ $(document).ready(function () {
 
 				break;
 			case 3:
-				console.log("blok right lcicked");
+				console.log("block right clicked");
 
 				//if it was a right click and the clicked block's data-state attribute is 'not_clicked'
 				if ($(this).data('state') === "not_clicked") {

@@ -36,7 +36,8 @@ function generate_field() {
 				block_state: "not_clicked",
 				block_type: temp_block_type,
 				block_coordinate_x: temp_coordinates['x'],
-				block_coordinate_y: temp_coordinates['y']
+				block_coordinate_y: temp_coordinates['y'],
+				block_adyacent_empties: 0
 			};
 
 			//push new blocks object to array
@@ -68,8 +69,81 @@ function generate_field() {
 	plantBombs(array_of_blocks, number_of_bombs, bomb_limit);
 
 	//testing purposes
-	console.log(array_of_blocks);
-	console.log(block_bombs);
+	// console.log(array_of_blocks);
+	// console.log(block_bombs);
+}
+
+function calculateDistance(block_id) {
+
+	var block_index_x = block_id.charAt(0);
+	var block_index_y = block_id.charAt(2);
+
+	var block_empty = array_of_blocks[block_index_x][block_index_y];
+
+	if (block_empty['block_type'] !== "bomb") {
+		var bombs = traverseBoard(block_empty,
+			function (isBomb) {		
+				var bomb_type = isBomb['block_type'];
+				//Non inverted boolean so true boolean representation
+				return (!!(bomb_type === "bomb")) ? false : true;
+			});
+
+		if (bombs.length > 0) {
+			block_empty['block_adyacent_empties'] = bombs.length;
+		} 
+	}
+}
+
+//traverse the board
+function traverseBoard(empty_block, isBomb) {
+
+	var empty_blocks = [];
+
+	isBomb = isBomb || function () { return true; };
+
+	var temp_coordinate_x = empty_block['block_coordinate_x'];
+	var temp_coordinate_y = empty_block['block_coordinate_y'];
+	// traverse up
+	if (temp_coordinate_x > 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x - 1][temp_coordinate_y]);
+	}
+
+	// traverse down
+	if (temp_coordinate_x < dimension - 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y]);
+	}
+
+	// traverse left
+	if (temp_coordinate_y > 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x][temp_coordinate_y - 1]);
+	}
+
+	// traverse right
+	if (temp_coordinate_y < dimension - 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x][temp_coordinate_y + 1]);
+	}
+
+	// traverse upper left
+	if (temp_coordinate_x > 1 && temp_coordinate_y > 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_y - 1][temp_coordinate_y - 1]);
+	}
+
+	// traverse lower left
+	if (temp_coordinate_x < dimension - 1 && temp_coordinate_y > 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y - 1]);
+	}
+
+	// traverse upper right
+	if (temp_coordinate_x > 1 && temp_coordinate_y < dimension - 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x - 1][temp_coordinate_y + 1]);
+	}
+
+	// traverse lower right
+	if (temp_coordinate_x < dimension - 1 && temp_coordinate_y < dimension - 1) {
+		empty_blocks.push(array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y + 1]);
+	}
+
+	return $.grep(empty_blocks, isBomb);
 }
 
 function getRandomNumber(max) {
@@ -133,7 +207,7 @@ function fancyTimeFormat(time) {
 $(document).ready(function () {
 	$('body').on('mousedown', '.block', function (event) {
 		console.log("block clicked");
-		debugger
+
 		switch (event.which) {
 			case 1:
 				//if it was a left click and the clicked block's data-state attribute is 'not_clicked'
@@ -150,6 +224,7 @@ $(document).ready(function () {
 					console.log("a bomb block was clicked!! - perform_bomb_clicked_method() " + "--- the bomb's coordinates were " + $(this).attr('id'));
 				} else if ($(this).data('type') === "empty") {
 					console.log("an empty block was clicked - perform_the_empty_area_crawl_method() " + "--- the clicked block's coordinates were " + $(this).attr('id'));
+					calculateDistance($(this).attr('id'));
 				}
 				break;
 			case 2:

@@ -45,7 +45,7 @@ function generate_field() {
 			//set data-state, data-type, class & id attributes, and background image of the new block element
 			new_block_div
 				.data('state', new_block_object.block_state)
-				.attr('type', new_block_object.block_type)
+				.data('type', new_block_object.block_type)
 				.attr('id', `${temp_coordinates['x']}` + "-" + `${temp_coordinates['y']}`)
 				.addClass('block')
 				.css('background-image', `url(assets/images/${new_block_object.block_state}.png)`);
@@ -68,8 +68,8 @@ function generate_field() {
 	plantBombs(array_of_blocks, number_of_bombs, bomb_limit);
 
 	//testing purposes
-	// console.log(array_of_blocks);
-	// console.log(block_bombs);
+	console.log(array_of_blocks);
+	console.log(block_bombs);
 }
 
 function getRandomNumber(max) {
@@ -90,7 +90,7 @@ function plantBombs(array, bombsPlanted, limit) {
 			temp_obj['block_coordinate_x'] = index_x;
 			temp_obj['block_coordinate_y'] = index_y;
 			//search for specific coordinates
-			$('#'+index_x + '-' + index_y).attr('type',temp_obj.block_type);
+			$('#' + index_x + '-' + index_y).data('type', temp_obj.block_type);
 			array[index_x][index_y] = temp_obj;
 			block_bombs[index_x] = {};
 			block_bombs[index_x][index_y] = temp_obj;
@@ -133,7 +133,7 @@ function fancyTimeFormat(time) {
 $(document).ready(function () {
 	$('body').on('mousedown', '.block', function (event) {
 		console.log("block clicked");
-
+		debugger
 		switch (event.which) {
 			case 1:
 				//if it was a left click and the clicked block's data-state attribute is 'not_clicked'

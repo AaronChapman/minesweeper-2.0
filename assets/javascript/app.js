@@ -167,7 +167,7 @@ function plantBombs(array, bombsPlanted, limit) {
 
  	var index_x, index_y;
 
- 	while (bombsPlanted <= limit) {
+ 	while (bombsPlanted < limit) {
  		index_x = getRandomNumber(9);
 		index_y = getRandomNumber(9);
 		var temp_obj = array[index_x][index_y];
@@ -178,8 +178,7 @@ function plantBombs(array, bombsPlanted, limit) {
 			//search for specific coordinates
 			$('#' + index_x + '-' + index_y).data('type', temp_obj.block_type);
 			array[index_x][index_y] = temp_obj;
-			array_of_bombs[index_x] = {};
-			array_of_bombs[index_x][index_y] = temp_obj;
+			array_of_bombs.push(temp_obj);
 			bombsPlanted++;
 		}
  	}
@@ -215,8 +214,26 @@ function fancyTimeFormat(time) {
 	return ret;
 }
 
+function autoRevealFlag(array_of_bombs) {
+
+	for(item of array_of_bombs) {
+		item['block_state'] = "flagged";
+		$('#' + item['block_coordinate_x'] + '-' + item['block_coordinate_y'])
+			.data('state', 'flagged')
+			.css('background-image', `url(assets/images/${item.block_state}.png)`);
+	};
+};
+
 //when a div with the class 'block' is clicked on
 $(document).ready(function () {
+	
+	$('.autoflag').on('click', function (event) {
+
+		event.preventDefault();
+
+		autoRevealFlag(array_of_bombs);
+	});
+
 	$('body').on('mousedown', '.block', function (event) {
 		console.log("block clicked");
 

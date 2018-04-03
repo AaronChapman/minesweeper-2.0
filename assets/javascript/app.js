@@ -70,7 +70,7 @@ function generate_field() {
 
 	//testing purposes
 	// console.log(array_of_blocks);
-	// console.log(block_bombs);
+	// console.log(array_of_bombs);	
 }
 
 function calculateDistance(block_id) {
@@ -251,6 +251,9 @@ $(document).ready(function () {
 				//example below:
 				if ($(this).data('type') === "bomb") {
 					console.log("a bomb block was clicked!! - perform_bomb_clicked_method() " + "--- the bomb's coordinates were " + $(this).attr('id'));
+					$(this)
+						.data('state', 'clicked')
+						.css('background-image', 'url(assets/images/bomb.png)');
 				} else if ($(this).data('type') === "empty") {
 					console.log("an empty block was clicked - perform_the_empty_area_crawl_method() " + "--- the clicked block's coordinates were " + $(this).attr('id'));
 					calculateDistance($(this).attr('id'));

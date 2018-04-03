@@ -76,7 +76,7 @@ function generate_field() {
 }
 
 function calculateDistance(block_id) {
-	debugger
+	
 	var block_index_x = block_id.charAt(0);
 	var block_index_y = block_id.charAt(2);
 

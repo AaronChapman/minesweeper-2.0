@@ -1,6 +1,7 @@
 //array to store all the block objects in the mine_field container
 var array_of_blocks = [];
 var number_of_bombs = 0; //ten bombs
+var number_of_empties = 0;
 var bomb_limit = 10;
 var number_of_flagged_blocks = 0;
 var array_of_bombs = [];
@@ -71,10 +72,11 @@ function generate_field() {
 	//testing purposes
 	// console.log(array_of_blocks);
 	// console.log(array_of_bombs);	
+	// console.log((array_of_blocks.length-1)*9);
 }
 
 function calculateDistance(block_id) {
-
+	debugger
 	var block_index_x = block_id.charAt(0);
 	var block_index_y = block_id.charAt(2);
 
@@ -89,10 +91,15 @@ function calculateDistance(block_id) {
 			});
 
 		if (empties.length > 0) {
+			number_of_empties += empties.length + 1;
 			block_empty['block_adyacent_empties'] = empties.length;
 		} 
 
 		revealEmptyBlocks(empties);
+		
+		if (number_of_empties === ((array_of_blocks.length - 1) * 9 - array_of_bombs.length)) {
+			alert('WIN');
+		}
 	}
 }
 
@@ -108,7 +115,7 @@ function revealEmptyBlocks(array_of_empties) {
 
 //traverse the board
 function traverseBoard(empty_block, isBomb) {
-	
+
 	var empty_blocks = [];
 
 	isBomb = isBomb || function () { return true; };
@@ -116,42 +123,50 @@ function traverseBoard(empty_block, isBomb) {
 	var temp_coordinate_x = empty_block['block_coordinate_x'];
 	var temp_coordinate_y = empty_block['block_coordinate_y'];
 	// traverse up
-	if (temp_coordinate_x > 1) {
+	if (temp_coordinate_x > 1 && 
+			array_of_blocks[temp_coordinate_x - 1][temp_coordinate_y]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x - 1][temp_coordinate_y]);
 	}
 
 	// traverse down
-	if (temp_coordinate_x < dimension - 1) {
+	if (temp_coordinate_x < dimension - 1 && 
+			array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y]);
 	}
 
 	// traverse left
-	if (temp_coordinate_y > 1) {
+	if (temp_coordinate_y > 1 && 
+			array_of_blocks[temp_coordinate_x][temp_coordinate_y - 1]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x][temp_coordinate_y - 1]);
 	}
 
 	// traverse right
-	if (temp_coordinate_y < dimension - 1) {
+	if (temp_coordinate_y < dimension - 1 && 
+			array_of_blocks[temp_coordinate_x][temp_coordinate_y + 1]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x][temp_coordinate_y + 1]);
 	}
 
 	// traverse upper left
-	if (temp_coordinate_x > 1 && temp_coordinate_y > 1) {
+	if (temp_coordinate_x > 1 && temp_coordinate_y > 1 &&
+			array_of_blocks[temp_coordinate_y - 1][temp_coordinate_y - 1]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_y - 1][temp_coordinate_y - 1]);
 	}
 
 	// traverse lower left
-	if (temp_coordinate_x < dimension - 1 && temp_coordinate_y > 1) {
+	if (temp_coordinate_x < dimension - 1 && temp_coordinate_y > 1 &&
+			array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y - 1]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y - 1]);
 	}
 
 	// traverse upper right
-	if (temp_coordinate_x > 1 && temp_coordinate_y < dimension - 1) {
+	if (temp_coordinate_x > 1 && temp_coordinate_y < dimension - 1 &&
+			array_of_blocks[temp_coordinate_x - 1][temp_coordinate_y + 1]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x - 1][temp_coordinate_y + 1]);
 	}
 
 	// traverse lower right
-	if (temp_coordinate_x < dimension - 1 && temp_coordinate_y < dimension - 1) {
+	if (temp_coordinate_x < dimension - 1 && temp_coordinate_y < dimension - 1 &&
+			array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y + 1]['block_state'] !== "clicked") {
 		empty_blocks.push(array_of_blocks[temp_coordinate_x + 1][temp_coordinate_y + 1]);
 	}
 
@@ -224,6 +239,22 @@ function autoRevealFlag(array_of_bombs) {
 	};
 };
 
+function confirm_reset() {
+	debugger
+	//reset entire game
+	var array_of_blocks = [];
+	var number_of_bombs = 0; //ten bombs
+	var number_of_empties = 0;
+	var bomb_limit = 10;
+	var number_of_flagged_blocks = 0;
+	var array_of_bombs = [];
+	var seconds = 120;
+	var dimension = 9;
+	$('.mine_field').children().remove();
+	generate_field();
+	return confirm("GAME OVER click OK to start over again!");
+}
+
 //when a div with the class 'block' is clicked on
 $(document).ready(function () {
 	
@@ -254,6 +285,7 @@ $(document).ready(function () {
 					$(this)
 						.data('state', 'clicked')
 						.css('background-image', 'url(assets/images/bomb.png)');
+					confirm_reset();
 				} else if ($(this).data('type') === "empty") {
 					console.log("an empty block was clicked - perform_the_empty_area_crawl_method() " + "--- the clicked block's coordinates were " + $(this).attr('id'));
 					calculateDistance($(this).attr('id'));

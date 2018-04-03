@@ -240,7 +240,7 @@ function autoRevealFlag(array_of_bombs) {
 };
 
 function confirm_reset() {
-	debugger
+	// debugger
 	//reset entire game
 	var array_of_blocks = [];
 	var number_of_bombs = 0; //ten bombs

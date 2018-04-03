@@ -11,7 +11,7 @@ var dimension = 9;
 function generate_field() {
 	//array of block types, coordinate variables, and temp_coordinates object
 	var block_types = ["empty", "bomb"];
-	var index_x = 0, index_y = 0;
+	// var index_x = 0, index_y = 0;
 	var temp_coordinates = { "x": 0, "y": 0 };
 	var temp_block_type = "";
 
@@ -20,8 +20,8 @@ function generate_field() {
 		//set temporary block coordinates (to be overwritten every iteration of block creation loop)
 		array_of_blocks[i] = {};
 		for (var j = 1; j < dimension+1; j++) {
-			temp_coordinates['x'] = index_x + 1;
-			temp_coordinates['y'] = index_y + 1;
+			temp_coordinates['x'] = i;
+			temp_coordinates['y'] = j;
 			//set temporary block type (will need some kind of algorithm to limit number of bombs
 			//and make sure they are evenly spread throughout the field)
 			// temp_block_type = block_types[Math.floor(Math.random() * block_types.length)];
@@ -55,14 +55,14 @@ function generate_field() {
 			mine_field.append(new_block_div);
 
 			//increment index_x
-			index_x++;
+			// index_x++;
 
-			//unless index_x divided by 9 has a remainder of 0 (end of row)
-			if (index_x % 9 === 0) {
-				//then reset index_x and increment index_y (new row)
-				index_x = 0;
-				index_y++;
-			}
+			// //unless index_x divided by 9 has a remainder of 0 (end of row)
+			// if (index_x % 9 === 0) {
+			// 	//then reset index_x and increment index_y (new row)
+			// 	index_x = 0;
+			// 	index_y++;
+			// }
 		}
 	}
 
@@ -74,7 +74,7 @@ function generate_field() {
 }
 
 function calculateDistance(block_id) {
-	
+
 	var block_index_x = block_id.charAt(0);
 	var block_index_y = block_id.charAt(2);
 
@@ -236,7 +236,7 @@ $(document).ready(function () {
 
 	$('body').on('mousedown', '.block', function (event) {
 		console.log("block clicked");
-
+	
 		switch (event.which) {
 			case 1:
 				//if it was a left click and the clicked block's data-state attribute is 'not_clicked'
